@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Report - Smart Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; min-height: 100vh; background: linear-gradient(135deg, #2ecc71, #3498db); display: flex; flex-direction: column; align-items: center; padding: 20px; transition: opacity 0.3s ease; }
+        .header { width: 100%; padding: 20px 40px; background: #ffffff; border-radius: 0 0 15px 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; transition: all 0.3s ease; }
+        .header:hover { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2); }
+        .header-greeting { font-size: 26px; font-weight: 600; color: #2c3e50; text-align: center; flex-grow: 1; }
+        .hamburger { display: none; font-size: 24px; background: none; border: none; color: #2c3e50; cursor: pointer; padding: 5px; }
+        .menu-container { position: relative; }
+        .menu { display: flex; gap: 10px; }
+        .back-btn { padding: 12px 20px; background: #3498db; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 500; transition: background 0.3s ease, transform 0.2s ease; position: relative; overflow: hidden; }
+        .back-btn:hover { background: #2980b9; transform: translateY(-2px); }
+        .menu-btn { padding: 12px 20px; background: #e74c3c; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 500; transition: background 0.3s ease, transform 0.2s ease; }
+        .menu-btn:hover { background: #c0392b; transform: translateY(-2px); }
+        .tooltip { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #34495e; color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 12px; visibility: hidden; opacity: 0; transition: opacity 0.2s ease; margin-bottom: 5px; }
+        .back-btn:hover .tooltip, .menu-btn:hover .tooltip { visibility: visible; opacity: 1; }
+        .report-container { background: #ffffff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); width: 90%; max-width: 800px; margin-top: 40px; transition: all 0.3s ease; position: relative; }
+        .report-container:hover { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2); }
+        .selection-container { margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; }
+        select { padding: 12px; font-size: 14px; border: 1px solid #dcdcdc; border-radius: 6px; background: #f9f9f9; transition: all 0.3s ease; }
+        select:focus { border-color: #3498db; background: #fff; box-shadow: 0 0 10px rgba(52, 152, 219, 0.2); outline: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
+        th { background: #2ecc71; color: #fff; font-weight: 600; }
+        tr:hover { background: #f5f5f5; }
+        .low-attendance { background: #e74c3c; color: #fff; }
+        .notification-card { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #ffffff; padding: 10px 20px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); font-size: 14px; color: #2c3e50; text-align: center; opacity: 0; transition: opacity 0.5s ease; z-index: 1500; max-width: 80%; }
+        .notification-card.active { opacity: 1; }
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; flex-direction: row; justify-content: space-between; }
+            .header-greeting { font-size: 22px; }
+            .hamburger { display: block; }
+            .menu { display: none; position: absolute; top: 60px; right: 20px; background: #fff; border-radius: 6px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); padding: 10px; flex-direction: column; gap: 8px; }
+            .menu.active { display: flex; }
+            .back-btn { font-size: 14px; padding: 10px 15px; }
+            .menu-btn { font-size: 14px; padding: 10px 15px; width: 100%; }
+            .report-container { padding: 20px; }
+            .selection-container { flex-direction: column; }
+            select { width: 100%; font-size: 13px; padding: 10px; }
+            th, td { font-size: 14px; padding: 8px; }
+            .notification-card { font-size: 12px; padding: 8px 16px; max-width: 90%; }
+        }
+    </style>
+</head>
+<body onload="initializeReport()">
+    <div class="header">
+        <button class="back-btn" onclick="goBack()" aria-label="Back to Dashboard">
+            Back
+            <span class="tooltip">Return to Dashboard</span>
+        </button>
+        <span class="header-greeting" id="headerGreeting">Attendance Report</span>
+        <div class="menu-container">
+            <button class="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">☰</button>
+            <div class="menu" id="headerMenu">
+                <button class="menu-btn" onclick="logout()" aria-label="Logout">
+                    Logout
+                    <span class="tooltip">End your session</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="report-container" id="reportContainer">
+        <div id="notificationCard" class="notification-card"></div>
+        <div class="selection-container" id="selectionContainer">
+            <select id="deptSelect" onchange="updateSections()" aria-label="Select Department">
+                <option value="">Select Department</option>
+            </select>
+            <select id="sectionSelect" onchange="loadReport()" aria-label="Select Section">
+                <option value="">Select Section</option>
+            </select>
+        </div>
+        <table id="attendanceTable">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Present Days</th>
+                    <th>Absent Days</th>
+                    <th>Attendance %</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (!loggedInUser) {
+            window.location.href = 'login.html';
+        }
+
+        const userEmail = loggedInUser.email;
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentDepartment = decodeURIComponent(urlParams.get('dept') || '');
+        let currentSection = decodeURIComponent(urlParams.get('section') || '');
+        const historyKey = `history-${userEmail}`;
+        const deptKey = `departments-${userEmail}`;
+        let historyDB = JSON.parse(localStorage.getItem(historyKey)) || [];
+        let departmentsDB = JSON.parse(localStorage.getItem(deptKey)) || [];
+
+        function initializeReport() {
+            document.getElementById('headerGreeting').textContent = `Attendance Report${currentDepartment && currentSection ? ` - ${currentDepartment.toUpperCase()}-${currentSection.toUpperCase()}` : ''}`;
+            
+            const deptSelect = document.getElementById('deptSelect');
+            departmentsDB.forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept.name;
+                option.textContent = dept.name;
+                deptSelect.appendChild(option);
+            });
+
+            if (currentDepartment && currentSection) {
+                deptSelect.value = currentDepartment;
+                updateSections();
+                document.getElementById('sectionSelect').value = currentSection;
+                loadReport();
+            } else {
+                document.getElementById('selectionContainer').style.display = 'flex';
+            }
+        }
+
+        function updateSections() {
+            const deptSelect = document.getElementById('deptSelect');
+            const sectionSelect = document.getElementById('sectionSelect');
+            currentDepartment = deptSelect.value;
+            sectionSelect.innerHTML = '<option value="">Select Section</option>';
+
+            if (currentDepartment) {
+                const dept = departmentsDB.find(d => d.name === currentDepartment);
+                if (dept) {
+                    dept.sections.forEach(section => {
+                        const option = document.createElement('option');
+                        option.value = section;
+                        option.textContent = section;
+                        sectionSelect.appendChild(option);
+                    });
+                } else {
+                    showNotification('No sections found for this department.');
+                }
+                document.getElementById('headerGreeting').textContent = `Attendance Report${currentSection ? ` - ${currentDepartment.toUpperCase()}-${currentSection.toUpperCase()}` : ''}`;
+            }
+        }
+
+        function loadReport() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            currentSection = document.getElementById('sectionSelect').value;
+
+            if (!currentDepartment || !currentSection) {
+                tableBody.innerHTML = '<tr><td colspan="4">Please select a department and section.</td></tr>';
+                return;
+            }
+
+            document.getElementById('headerGreeting').textContent = `Attendance Report - ${currentDepartment.toUpperCase()}-${currentSection.toUpperCase()}`;
+
+            const sectionHistory = historyDB.filter(record => 
+                record.department === currentDepartment && record.section === currentSection
+            );
+
+            const attendanceStats = {};
+            sectionHistory.forEach(record => {
+                record.present.forEach(student => {
+                    attendanceStats[student] = attendanceStats[student] || { present: 0, absent: 0 };
+                    attendanceStats[student].present++;
+                });
+                record.absent.forEach(student => {
+                    attendanceStats[student] = attendanceStats[student] || { present: 0, absent: 0 };
+                    attendanceStats[student].absent++;
+                });
+            });
+
+            Object.entries(attendanceStats).forEach(([student, stats]) => {
+                const totalDays = stats.present + stats.absent;
+                const percentage = totalDays > 0 ? ((stats.present / totalDays) * 100).toFixed(2) : 0;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student}</td>
+                    <td>${stats.present}</td>
+                    <td>${stats.absent}</td>
+                    <td ${percentage < 75 ? 'class="low-attendance"' : ''}>${percentage}%</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            if (Object.keys(attendanceStats).length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4">No attendance data available.</td></tr>';
+            }
+        }
+
+        function goBack() {
+            try {
+                document.body.style.opacity = '0.7';
+                document.body.style.cursor = 'wait';
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(btn => btn.disabled = true);
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 300);
+            } catch (error) {
+                console.error('Navigation error:', error);
+                showNotification('Navigation failed. Please try again.');
+                document.body.style.opacity = '1';
+                document.body.style.cursor = 'default';
+                buttons.forEach(btn => btn.disabled = false);
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                document.body.style.opacity = '0.7';
+                document.body.style.cursor = 'wait';
+                localStorage.setItem('lastLogin', Date.now());
+                localStorage.removeItem('loggedInUser');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 300);
+            }
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('headerMenu');
+            menu.classList.toggle('active');
+            document.addEventListener('click', closeMenuOutside, { once: true });
+        }
+
+        function closeMenuOutside(e) {
+            const menu = document.getElementById('headerMenu');
+            const hamburger = document.querySelector('.hamburger');
+            if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        }
+
+        function showNotification(message) {
+            const notificationCard = document.getElementById('notificationCard');
+            notificationCard.textContent = message;
+            notificationCard.classList.add('active');
+            setTimeout(() => {
+                notificationCard.classList.remove('active');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

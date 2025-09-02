@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Register - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; min-height: 100vh; background: linear-gradient(135deg, #2ecc71, #3498db); display: flex; flex-direction: column; align-items: center; transition: opacity 0.3s ease; }
+        .header { width: 100%; padding: 20px 40px; background: #ffffff; border-radius: 0 0 15px 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; transition: all 0.3s ease; }
+        .header:hover { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2); }
+        .header-greeting { font-size: 26px; font-weight: 600; color: #2c3e50; text-align: center; flex-grow: 1; }
+        
+        /* Hamburger Menu Styles */
+        .hamburger { display: none; font-size: 24px; background: none; border: none; cursor: pointer; color: #2c3e50; }
+        .header-buttons { display: flex; gap: 10px; }
+        .logout-btn { padding: 12px 20px; background: #e74c3c; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 500; transition: background 0.3s ease, transform 0.2s ease; position: relative; overflow: hidden; }
+        .logout-btn:hover { background: #c0392b; transform: translateY(-2px); }
+        .menu-content { display: none; position: absolute; top: 100%; right: 40px; background: #ffffff; border-radius: 6px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); padding: 10px; }
+
+        .container { background: #ffffff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); width: 90%; max-width: 800px; margin-top: 40px; transition: all 0.3s ease; }
+        .container:hover { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2); }
+        .welcome-message { font-size: 28px; font-weight: 500; color: #2c3e50; text-align: center; margin-bottom: 25px; }
+        .info-text { font-size: 14px; color: #7f8c8d; text-align: center; margin-bottom: 20px; }
+        .action-buttons { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        .action-btn { padding: 12px 28px; background: #2ecc71; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 500; transition: background 0.3s ease, transform 0.2s ease; position: relative; overflow: hidden; }
+        .action-btn:hover { background: #27ae60; transform: translateY(-2px); }
+        .action-btn:disabled, .logout-btn:disabled { background: #95a5a6; cursor: not-allowed; transform: none; }
+        .tooltip { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #34495e; color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 12px; visibility: hidden; opacity: 0; transition: opacity 0.2s ease; margin-bottom: 5px; }
+        .action-btn:hover .tooltip, .logout-btn:hover .tooltip { visibility: visible; opacity: 1; }
+        .attend-percent-btn { background: #f1c40f; }
+        .attend-percent-btn:hover { background: #d4ac0d; }
+        .marks-entry-btn { background: #3498db; }
+        .marks-entry-btn:hover { background: #2980b9; }
+
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; flex-direction: row; gap: 10px; }
+            .header-greeting { font-size: 22px; }
+            .hamburger { display: block; }
+            .header-buttons { display: none; }
+            .header-buttons.active { display: block; position: absolute; top: 60px; right: 20px; background: #fff; border-radius: 6px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); padding: 10px; }
+            .logout-btn { font-size: 14px; padding: 10px 15px; width: 100%; }
+            .container { padding: 30px; max-width: 90%; margin-top: 20px; }
+            .welcome-message { font-size: 22px; }
+            .action-btn { font-size: 14px; padding: 10px 22px; width: 100%; max-width: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header" role="navigation">
+        <span class="header-greeting" id="headerGreeting">Welcome, User!</span>
+        <button class="hamburger" aria-label="Menu" onclick="toggleMenu()">☰</button>
+        <div class="header-buttons" id="headerButtons">
+            <button class="logout-btn" onclick="logout()" aria-label="Logout">
+                Logout
+                <span class="tooltip">End your session</span>
+            </button>
+        </div>
+    </div>
+    <div class="container" role="main">
+        <div class="welcome-message" id="welcomeMessage">Welcome, User!</div>
+        <div class="info-text" id="lastLogin"></div>
+        <div class="action-buttons">
+            <button class="action-btn" onclick="navigateTo('departments.html')" aria-label="Take Attendance">
+                Take Attendance
+                <span class="tooltip">Record attendance</span>
+            </button>
+            <button class="action-btn" onclick="navigateTo('attendance_history.html')" aria-label="Attendance Data">
+                Attendance Data
+                <span class="tooltip">View past records</span>
+            </button>
+            <button class="action-btn attend-percent-btn" onclick="navigateToReport()" aria-label="Attendance Percentage">
+                Attendance Percentage
+                <span class="tooltip">View attendance report</span>
+            </button>
+            <button class="action-btn marks-entry-btn" onclick="navigateToMarksEntry()" aria-label="Marks Entry">
+                Marks Entry
+                <span class="tooltip">Enter student marks</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', initializePage);
+
+        function initializePage() {
+            try {
+                const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+                if (!loggedInUser || !loggedInUser.username || !loggedInUser.email) {
+                    throw new Error('Invalid user session');
+                }
+                
+                const username = loggedInUser.username;
+                document.getElementById('headerGreeting').textContent = `Welcome, ${username}!`;
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${username}!`;
+                
+                const lastLogin = localStorage.getItem('lastLogin');
+                if (lastLogin) {
+                    document.getElementById('lastLogin').textContent = 
+                        `Last login: ${new Date(parseInt(lastLogin)).toLocaleString()}`;
+                }
+            } catch (error) {
+                console.error('Initialization error:', error);
+                localStorage.removeItem('loggedInUser');
+                navigateTo('login.html');
+            }
+        }
+
+        function navigateTo(page) {
+            try {
+                if (!page || typeof page !== 'string') {
+                    throw new Error('Invalid navigation target');
+                }
+                document.body.style.opacity = '0.7';
+                document.body.style.cursor = 'wait';
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(btn => btn.disabled = true);
+                setTimeout(() => {
+                    window.location.href = page;
+                }, 300);
+            } catch (error) {
+                console.error('Navigation error:', error);
+                alert('Navigation failed. Please try again.');
+                resetLoadingState();
+            }
+        }
+
+        function navigateToReport() {
+            navigateTo('attendance-report.html');
+        }
+
+        function navigateToMarksEntry() {
+            navigateTo('marks_entry.html');
+        }
+
+        function logout() {
+            try {
+                if (confirm('Are you sure you want to logout?')) {
+                    document.body.style.opacity = '0.7';
+                    document.body.style.cursor = 'wait';
+                    localStorage.setItem('lastLogin', Date.now());
+                    localStorage.removeItem('loggedInUser');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Logout failed. Please try again.');
+                resetLoadingState();
+            }
+        }
+
+        function resetLoadingState() {
+            document.body.style.opacity = '1';
+            document.body.style.cursor = 'default';
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = false);
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('headerButtons');
+            menu.classList.toggle('active');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') logout();
+            if (e.key === 't' && e.altKey) navigateTo('departments.html');
+            if (e.key === 'a' && e.altKey) navigateTo('attendance_history.html');
+            if (e.key === 'p' && e.altKey) navigateToReport();
+            if (e.key === 'm' && e.altKey) navigateToMarksEntry();
+        });
+    </script>
+</body>
+</html>

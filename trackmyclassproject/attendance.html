@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance - Smart Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+        .header {
+            width: 100%;
+            padding: 20px 40px;
+            background: #ffffff;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .header:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        .header-greeting {
+            font-size: 26px;
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+            flex-grow: 1;
+        }
+        .hamburger {
+            display: none;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #2c3e50;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .back-btn {
+            padding: 12px 20px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .back-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        .logout-btn, .select-btn, .delete-All-btn, .create-multi-btn, .add-button {
+            padding: 12px 20px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .logout-btn:hover, .select-btn:hover, .delete-All-btn:hover, .create-multi-btn:hover, .add-button:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        .add-button {
+            background: #2ecc71;
+        }
+        .add-button:hover {
+            background: #27ae60;
+        }
+        .create-multi-btn {
+            background: #3498db;
+        }
+        .create-multi-btn:hover {
+            background: #2980b9;
+        }
+        .delete-All-btn {
+            background: #e74c3c;
+        }
+        .delete-All-btn:hover {
+            background: #c0392b;
+        }
+        .select-btn.active {
+            background: #e74c3c;
+        }
+        .select-btn.active:hover {
+            background: #c0392b;
+        }
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #34495e;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            margin-bottom: 5px;
+        }
+        .back-btn:hover .tooltip,
+        .logout-btn:hover .tooltip, 
+        .select-btn:hover .tooltip, 
+        .delete-All-btn:hover .tooltip, 
+        .create-multi-btn:hover .tooltip, 
+        .add-button:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 800px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        .container:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        .hex-button {
+            width: 70px;
+            height: 70px;
+            background: #2ecc71;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .hex-button:hover {
+            background: #27ae60;
+            transform: scale(1.05);
+        }
+        .hex-button.red {
+            background: #e74c3c;
+        }
+        .hex-button.red:hover {
+            background: #c0392b;
+        }
+        .hex-button.selected {
+            background: #3498db;
+            border: 2px solid #ffffff;
+        }
+        .hex-button.selected:hover {
+            background: #2980b9;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            width: 90%;
+            max-width: 800px;
+            padding: 10px 0;
+        }
+        .submit-button {
+            padding: 12px 28px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        .submit-button:hover {
+            background: #2980b9;
+        }
+        .context-menu {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .context-menu.active {
+            display: flex;
+            opacity: 1;
+        }
+        .context-menu button {
+            padding: 12px 16px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        .context-menu button:hover {
+            background: #2980b9;
+        }
+        .context-menu .delete-btn {
+            background: #e74c3c;
+        }
+        .context-menu .delete-btn:hover {
+            background: #c0392b;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        @media (max-width: 768px) {
+    .header {
+        padding: 15px 20px;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .header-greeting {
+        font-size: 22px;
+    }
+    .hamburger {
+        display: block;
+    }
+    .header-buttons {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .header-buttons.active {
+        display: flex;
+    }
+    .back-btn {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+    .logout-btn, .select-btn, .delete-All-btn, .create-multi-btn, .add-button {
+        font-size: 14px;
+        padding: 10px 15px;
+        width: 100%;
+    }
+    .container {
+        padding: 30px;
+        max-width: 90%;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    .hex-button {
+        width: 50px;
+        height: 50px;
+        font-size: 12px;
+    }
+    .button-group {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center; /* Added to center children horizontally */
+    }
+    .submit-button {
+        font-size: 14px;
+        padding: 10px 22px;
+        width: 100%;
+        max-width: 200px;
+    }
+}
+    </style>
+</head>
+<body onload="loadButtons()">
+    <div class="header">
+        <button class="back-btn" onclick="goBack()" aria-label="Back to Dashboard">
+            Back
+            <span class="tooltip">Return to Dashboard</span>
+        </button>
+        <span class="header-greeting" id="headerGreeting">Welcome, User!</span>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">☰</button>
+        <div class="header-buttons" id="headerButtons">
+            <button class="logout-btn" onclick="logout()" aria-label="Logout">
+                Logout
+                <span class="tooltip">End your session</span>
+            </button>
+            <button class="select-btn" id="selectBtn" onclick="toggleSelectDelete()" aria-label="Toggle select/delete mode">
+                Select
+                <span class="tooltip">Toggle select/delete mode</span>
+            </button>
+            <button class="delete-All-btn" onclick="deleteAllButtons()" aria-label="Delete all buttons">
+                Delete All
+                <span class="tooltip">Delete all students</span>
+            </button>
+            <button class="create-multi-btn" onclick="createMultipleButtons()" aria-label="Create multiple buttons">
+                Create Multi
+                <span class="tooltip">Add multiple students</span>
+            </button>
+            <button class="add-button" onclick="addHexagon()" aria-label="Add new hexagon button">
+                Add
+                <span class="tooltip">Add a single student</span>
+            </button>
+        </div>
+    </div>
+    <div class="container" id="buttonContainer"></div>
+    <div class="button-group">
+        <button class="submit-button" onclick="submitSelected()" aria-label="Submit selected attendance">Submit</button>
+    </div>
+    <div id="contextMenu" class="context-menu"></div>
+
+    <script>
+        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (!loggedInUser) {
+            window.location.href = 'login.html';
+        }
+
+        const userEmail = loggedInUser.email;
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentDepartment = decodeURIComponent(urlParams.get('dept') || 'Unknown Dept');
+        const currentSection = decodeURIComponent(urlParams.get('section') || 'Unknown Section');
+        const attendanceKey = `attendance-${userEmail}`;
+        const historyKey = `history-${userEmail}`;
+        let attendanceDB = JSON.parse(localStorage.getItem(attendanceKey)) || {};
+        let historyDB = JSON.parse(localStorage.getItem(historyKey)) || [];
+        let currentLabel = null;
+        let isDeleteMode = false;
+
+        document.getElementById('headerGreeting').textContent = `Welcome, ${loggedInUser.username}! - ${currentDepartment.toUpperCase()}-${currentSection.toUpperCase()}`;
+
+        function loadButtons() {
+            const container = document.getElementById('buttonContainer');
+            container.innerHTML = '';
+            const sectionAttendance = attendanceDB[`${currentDepartment}-${currentSection}`] || { students: [] };
+            sectionAttendance.students.forEach(student => {
+                createButton(student.label, student.present);
+            });
+        }
+
+        function createButton(label, isPresent = true) {
+            const container = document.getElementById('buttonContainer');
+            const button = document.createElement('div');
+            button.className = 'hex-button';
+            button.innerText = label;
+            button.setAttribute('aria-label', `Mark attendance for ${label}`);
+            if (!isPresent) button.classList.add('red');
+            button.onclick = () => toggleButton(button);
+            button.ondblclick = () => createRangeFromButton(label);
+            button.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                showContextMenu(e, label);
+            });
+            container.appendChild(button);
+        }
+
+        function toggleButton(button) {
+            if (isDeleteMode) {
+                button.classList.toggle('selected');
+            } else {
+                button.classList.toggle('red');
+            }
+        }
+
+        function toggleSelectDelete() {
+            const selectBtn = document.getElementById('selectBtn');
+            if (!isDeleteMode) {
+                isDeleteMode = true;
+                selectBtn.innerText = 'Delete';
+                selectBtn.classList.add('active');
+            } else {
+                const selectedButtons = document.querySelectorAll('.hex-button.selected');
+                if (selectedButtons.length > 0) {
+                    selectedButtons.forEach(btn => btn.remove());
+                    saveAttendance();
+                }
+                isDeleteMode = false;
+                selectBtn.innerText = 'Select';
+                selectBtn.classList.remove('active');
+                clearSelections();
+            }
+        }
+
+        function clearSelections() {
+            const buttons = document.querySelectorAll('.hex-button');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+        }
+
+        function addHexagon() {
+            const container = document.getElementById('buttonContainer');
+            const existingLabels = Array.from(container.children).map(btn => btn.innerText);
+            const newLabel = getNextLabel(existingLabels);
+            if (existingLabels.includes(newLabel)) {
+                alert('This label already exists!');
+                return;
+            }
+            createButton(newLabel);
+            saveAttendance();
+        }
+
+        function getNextLabel(existingLabels) {
+            if (!existingLabels.length) return 'L1';
+            const lastLabel = existingLabels[existingLabels.length - 1];
+            const matchL = lastLabel.match(/^L(\d+)$/);
+            if (matchL) return `L${Number(matchL[1]) + 1}`;
+            const matchAlpha = lastLabel.match(/^([A-Z])(\d+)$/);
+            if (matchAlpha) return `${matchAlpha[1]}${Number(matchAlpha[2]) + 1}`;
+            const matchNum = lastLabel.match(/^(\d+)$/);
+            if (matchNum) return `${Number(matchNum[1]) + 1}`;
+            return 'L1';
+        }
+
+        function createMultipleButtons() {
+            const rangeInput = prompt('Enter a range (e.g., 1-40, A0-C5, L1-L14, 67-L14):');
+            if (!rangeInput) return;
+
+            const [start, end] = rangeInput.split('-');
+            const newLabels = parseRange(start, end);
+            if (newLabels.length === 0) {
+                alert('Invalid range format!');
+                return;
+            }
+
+            const container = document.getElementById('buttonContainer');
+            const existingLabels = Array.from(container.children).map(btn => btn.innerText);
+            newLabels.forEach(label => {
+                if (!existingLabels.includes(label)) {
+                    createButton(label);
+                }
+            });
+            saveAttendance();
+        }
+
+        function createRangeFromButton(baseLabel) {
+            const rangeInput = prompt(`Enter a range starting from ${baseLabel} (e.g., ${baseLabel}-L5):`, `${baseLabel}-`);
+            if (!rangeInput) return;
+
+            const [start, end] = rangeInput.split('-');
+            if (start !== baseLabel) {
+                alert('Start must match the double-clicked button!');
+                return;
+            }
+            const newLabels = parseRange(start, end);
+            if (newLabels.length === 0) {
+                alert('Invalid range format!');
+                return;
+            }
+
+            const container = document.getElementById('buttonContainer');
+            const existingLabels = Array.from(container.children).map(btn => btn.innerText);
+            newLabels.forEach(label => {
+                if (!existingLabels.includes(label) && label !== baseLabel) {
+                    createButton(label);
+                }
+            });
+            saveAttendance();
+        }
+
+        function parseRange(start, end) {
+            const labels = [];
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+            const startMatchNum = start.match(/^(\d+)$/);
+            const endMatchNum = end.match(/^(\d+)$/);
+            if (startMatchNum && endMatchNum) {
+                const startNum = Number(startMatchNum[1]);
+                const endNum = Number(endMatchNum[1]);
+                for (let i = startNum; i <= endNum; i++) labels.push(`${i}`);
+                return labels;
+            }
+
+            const startMatchAlphaNum = start.match(/^([A-Z])(\d+)$/);
+            const endMatchAlphaNum = end.match(/^([A-Z])(\d+)$/);
+            if (startMatchAlphaNum && endMatchAlphaNum) {
+                const startLetter = startMatchAlphaNum[1];
+                const endLetter = endMatchAlphaNum[1];
+                const startNum = Number(startMatchAlphaNum[2]);
+                const endNum = Number(endMatchAlphaNum[2]);
+                const startLetterIndex = alphabet.indexOf(startLetter);
+                const endLetterIndex = alphabet.indexOf(endLetter);
+
+                if (startLetterIndex > endLetterIndex) return [];
+
+                if (startLetter === 'L' && endLetter === 'L') {
+                    for (let i = startNum; i <= endNum; i++) {
+                        labels.push(`L${i}`);
+                    }
+                } else {
+                    if (startNum > 9 || endNum > 9) return [];
+                    for (let letterIndex = startLetterIndex; letterIndex <= endLetterIndex; letterIndex++) {
+                        const currentLetter = alphabet[letterIndex];
+                        const startForLetter = (letterIndex === startLetterIndex) ? startNum : 0;
+                        const endForLetter = (letterIndex === endLetterIndex) ? endNum : 9;
+                        for (let num = startForLetter; num <= endForLetter; num++) {
+                            labels.push(`${currentLetter}${num}`);
+                        }
+                    }
+                }
+                return labels;
+            }
+
+            const startNumOnly = start.match(/^(\d+)$/);
+            const endAlphaNum = end.match(/^([A-Z])(\d+)$/);
+            if (startNumOnly && endAlphaNum) {
+                const startNum = Number(startNumOnly[1]);
+                const endLetter = endAlphaNum[1];
+                const endNum = Number(endAlphaNum[2]);
+                const endLetterIndex = alphabet.indexOf(endLetter);
+
+                for (let i = startNum; i <= 99; i++) {
+                    labels.push(`${i}`);
+                }
+
+                if (endLetter === 'L') {
+                    for (let letterIndex = 0; letterIndex < alphabet.indexOf('L'); letterIndex++) {
+                        const currentLetter = alphabet[letterIndex];
+                        for (let num = 0; num <= 9; num++) {
+                            labels.push(`${currentLetter}${num}`);
+                        }
+                    }
+                    for (let num = 1; num <= endNum; num++) {
+                        labels.push(`L${num}`);
+                    }
+                } else {
+                    if (endNum > 9) return [];
+                    for (let letterIndex = 0; letterIndex <= endLetterIndex; letterIndex++) {
+                        const currentLetter = alphabet[letterIndex];
+                        const maxNum = (currentLetter === endLetter) ? endNum : 9;
+                        for (let num = 0; num <= maxNum; num++) {
+                            labels.push(`${currentLetter}${num}`);
+                        }
+                    }
+                }
+                return labels;
+            }
+
+            return [];
+        }
+
+        function deleteAllButtons() {
+            if (!confirm('Are you sure you want to delete all buttons?')) return;
+            const container = document.getElementById('buttonContainer');
+            container.innerHTML = '';
+            isDeleteMode = false;
+            const selectBtn = document.getElementById('selectBtn');
+            selectBtn.innerText = 'Select';
+            selectBtn.classList.remove('active');
+            saveAttendance();
+        }
+
+        function showContextMenu(e, label) {
+            currentLabel = label;
+            const contextMenu = document.getElementById('contextMenu');
+            contextMenu.innerHTML = `
+                <button class="edit-btn" onclick="editButton()" aria-label="Edit button">Edit</button>
+                <button class="delete-btn" onclick="deleteButton()" aria-label="Delete button">Delete</button>
+            `;
+            contextMenu.classList.add('active');
+            const { pageX: x, pageY: y } = e;
+ರ
+
+            const { offsetWidth: menuWidth, offsetHeight: menuHeight } = contextMenu;
+            contextMenu.style.left = `${Math.min(x, window.innerWidth - menuWidth)}px`;
+            contextMenu.style.top = `${Math.min(y, window.innerHeight - menuHeight)}px`;
+            document.addEventListener('click', hideContextMenu, { once: true });
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenu').classList.remove('active');
+            currentLabel = null;
+        }
+
+        function editButton() {
+            if (!currentLabel) return;
+            const newLabel = prompt('Edit button label:', currentLabel);
+            if (!newLabel || newLabel.trim() === '' || newLabel === currentLabel) return;
+
+            const container = document.getElementById('buttonContainer');
+            const buttons = container.querySelectorAll('.hex-button');
+            for (let btn of buttons) {
+                if (btn.innerText === newLabel) {
+                    alert('This label already exists!');
+                    return;
+                }
+            }
+
+            const button = Array.from(buttons).find(btn => btn.innerText === currentLabel);
+            if (button) {
+                const isRed = button.classList.contains('red');
+                const isSelected = button.classList.contains('selected');
+                button.innerText = newLabel;
+                button.setAttribute('aria-label', `Mark attendance for ${newLabel}`);
+                button.onclick = () => toggleButton(button);
+                button.ondblclick = () => createRangeFromButton(newLabel);
+                button.removeEventListener('contextmenu', null);
+                button.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showContextMenu(e, newLabel);
+                });
+                if (isRed) button.classList.add('red');
+                if (isSelected) button.classList.add('selected');
+            }
+            saveAttendance();
+            hideContextMenu();
+        }
+
+        function deleteButton() {
+            if (!currentLabel) return;
+            const container = document.getElementById('buttonContainer');
+            const button = Array.from(container.querySelectorAll('.hex-button')).find(btn => btn.innerText === currentLabel);
+            if (button && confirm(`Delete button "${currentLabel}"?`)) {
+                button.remove();
+                saveAttendance();
+            }
+            hideContextMenu();
+        }
+
+        function saveAttendance() {
+            const buttons = document.querySelectorAll('.hex-button');
+            const students = Array.from(buttons).map(btn => ({
+                label: btn.innerText,
+                present: !btn.classList.contains('red')
+            }));
+            attendanceDB[`${currentDepartment}-${currentSection}`] = { students };
+            localStorage.setItem(attendanceKey, JSON.stringify(attendanceDB));
+        }
+
+        function submitSelected() {
+            const buttons = document.querySelectorAll('.hex-button');
+            
+            const presentLabels = Array.from(buttons)
+                .filter(btn => !btn.classList.contains('red'))
+                .map(btn => btn.innerText);
+            const absentLabels = Array.from(buttons)
+                .filter(btn => btn.classList.contains('red'))
+                .map(btn => btn.innerText);
+            
+            if (presentLabels.length === 0 && absentLabels.length === 0) {
+                alert('No students to submit!');
+                return;
+            }
+            
+            const attendanceRecord = {
+                department: currentDepartment,
+                section: currentSection,
+                date: new Date().toISOString(),
+                present: presentLabels,
+                absent: absentLabels
+            };
+            
+            historyDB.push(attendanceRecord);
+            localStorage.setItem(historyKey, JSON.stringify(historyDB));
+            
+            buttons.forEach(btn => {
+                btn.classList.remove('selected');
+                btn.classList.remove('red');
+            });
+            
+            saveAttendance();
+            
+            document.body.style.opacity = '0.7';
+            document.body.style.cursor = 'wait';
+            const allButtons = document.querySelectorAll('button');
+            allButtons.forEach(btn => btn.disabled = true);
+            setTimeout(() => {
+                alert(`Attendance submitted!\nPresent: ${presentLabels.length}\nAbsent: ${absentLabels.length}`);
+                resetLoadingState();
+            }, 300);
+            
+            isDeleteMode = false;
+            const selectBtn = document.getElementById('selectBtn');
+            selectBtn.innerText = 'Select';
+            selectBtn.classList.remove('active');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                saveAttendance();
+                document.body.style.opacity = '0.7';
+                document.body.style.cursor = 'wait';
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(btn => btn.disabled = true);
+                localStorage.setItem('lastLogin', Date.now());
+                localStorage.removeItem('loggedInUser');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 300);
+            }
+        }
+
+        function goBack() {
+            saveAttendance();
+            document.body.style.opacity = '0.7';
+            document.body.style.cursor = 'wait';
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 300);
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('headerButtons');
+            menu.classList.toggle('active');
+            document.addEventListener('click', closeMenuOutside, { once: true });
+        }
+
+        function closeMenuOutside(e) {
+            const menu = document.getElementById('headerButtons');
+            const hamburger = document.querySelector('.hamburger');
+            if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        }
+
+        function resetLoadingState() {
+            document.body.style.opacity = '1';
+            document.body.style.cursor = 'default';
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = false);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Attendance - Smart Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        header {
+            width: 100%;
+            padding: 20px 40px;
+            background: #ffffff;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-greeting {
+            font-size: 26px;
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+            flex-grow: 1;
+            margin: 0;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #2c3e50;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .back-btn {
+            padding: 12px 20px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            padding: 12px 20px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #34495e;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            margin-bottom: 5px;
+        }
+
+        .back-btn:hover .tooltip,
+        .logout-btn:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .dept {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 600px;
+            margin-top: 40px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .dept:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .deptb {
+            padding: 12px 24px;
+            background: #2ecc71;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            max-width: 300px;
+            transition: background 0.3s ease;
+        }
+
+        .deptb:hover {
+            background: #27ae60;
+        }
+
+        .sections {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sections.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .sections button {
+            padding: 12px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .sections button:hover {
+            background: #2980b9;
+        }
+
+        .add-section-btn {
+            background: #2ecc71;
+        }
+
+        .add-section-btn:hover {
+            background: #27ae60;
+        }
+
+        .context-menu {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .context-menu.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .context-menu button {
+            padding: 12px 16px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .context-menu button:hover {
+            background: #2980b9;
+        }
+
+        .context-menu .delete-btn {
+            background: #e74c3c;
+        }
+
+        .context-menu .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            .header-greeting {
+                font-size: 22px;
+            }
+            .hamburger {
+                display: block;
+            }
+            .header-buttons {
+                display: none;
+                position: absolute;
+                top: 60px;
+                right: 20px;
+                background: #fff;
+                border-radius: 6px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                padding: 10px;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .header-buttons.active {
+                display: flex;
+            }
+            .logout-btn {
+                font-size: 14px;
+                padding: 10px 15px;
+                width: 100%;
+            }
+            .back-btn {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+            .dept {
+                padding: 30px;
+                max-width: 90%;
+                margin-top: 20px;
+            }
+            .deptb, .sections button {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="back-btn" onclick="goBack()" aria-label="Back to Dashboard">
+            Back
+            <span class="tooltip">Return to Dashboard</span>
+        </button>
+        <span class="header-greeting" id="headerGreeting">Welcome, User!</span>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">☰</button>
+        <div class="header-buttons" id="headerButtons">
+            <button class="logout-btn" onclick="logout()" aria-label="Logout">
+                Logout
+                <span class="tooltip">End your session</span>
+            </button>
+        </div>
+    </header>
+    <div class="dept" id="buttonContainer">
+        <button class="deptb" id="addDept" onclick="addDepartment()" aria-label="Add Department">Add Department</button>
+    </div>
+    <div id="contextMenu" class="context-menu"></div>
+
+    <script>
+        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (!loggedInUser) {
+            window.location.href = 'login.html';
+        }
+
+        const userEmail = loggedInUser.email;
+        const deptKey = `departments-${userEmail}`;
+        let departmentsDB = JSON.parse(localStorage.getItem(deptKey)) || [];
+        let currentDeptName = null;
+        let currentSectionName = null;
+
+        // Set welcome message with username
+        document.getElementById('headerGreeting').textContent = `Welcome, ${loggedInUser.username}!`;
+
+        function loadDepartments() {
+            const buttonContainer = document.getElementById('buttonContainer');
+            buttonContainer.innerHTML = '<button class="deptb" id="addDept" onclick="addDepartment()" aria-label="Add Department">Add Department</button>';
+            departmentsDB.forEach(dept => addDepartmentToDOM(dept.name, dept.sections));
+        }
+
+        function addDepartmentToDOM(deptName, sections) {
+            const buttonContainer = document.getElementById('buttonContainer');
+            const newDeptButton = document.createElement('button');
+            newDeptButton.className = 'deptb';
+            newDeptButton.innerText = deptName;
+            newDeptButton.setAttribute('aria-label', `Toggle sections for ${deptName}`);
+            newDeptButton.onclick = () => toggleSections(deptName);
+            newDeptButton.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                showContextMenu(e, deptName, null);
+            });
+
+            const newSectionDiv = document.createElement('div');
+            newSectionDiv.className = 'sections';
+            newSectionDiv.id = deptName;
+
+            sections.forEach(sec => {
+                const secButton = document.createElement('button');
+                secButton.innerText = sec;
+                secButton.setAttribute('aria-label', `Go to attendance for ${sec} in ${deptName}`);
+                secButton.onclick = () => navigateToAttendance(deptName, sec);
+                secButton.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showContextMenu(e, deptName, sec);
+                });
+                newSectionDiv.appendChild(secButton);
+            });
+
+            const addSectionButton = document.createElement('button');
+            addSectionButton.className = 'add-section-btn';
+            addSectionButton.innerText = 'Add Section';
+            addSectionButton.setAttribute('aria-label', `Add section to ${deptName}`);
+            addSectionButton.onclick = () => addSection(deptName);
+            newSectionDiv.appendChild(addSectionButton);
+
+            buttonContainer.insertBefore(newDeptButton, document.getElementById('addDept'));
+            buttonContainer.insertBefore(newSectionDiv, document.getElementById('addDept'));
+        }
+
+        function toggleSections(deptId) {
+            const section = document.getElementById(deptId);
+            const allSections = document.querySelectorAll('.sections');
+            const isOpen = section.classList.contains('active');
+            allSections.forEach(s => s.classList.remove('active'));
+            if (!isOpen) {
+                section.classList.add('active');
+            }
+        }
+
+        function navigateToAttendance(dept, section) {
+            document.body.style.opacity = '0.7';
+            document.body.style.cursor = 'wait';
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+            setTimeout(() => {
+                window.location.href = `attendance.html?dept=${encodeURIComponent(dept)}&section=${encodeURIComponent(section)}`;
+            }, 300);
+        }
+
+        function addDepartment() {
+            const addDeptBtn = document.getElementById('addDept');
+            addDeptBtn.disabled = true;
+            const newDeptName = prompt('Enter the department name:');
+            if (!newDeptName || newDeptName.trim() === '') {
+                addDeptBtn.disabled = false;
+                return;
+            }
+
+            if (departmentsDB.some(dept => dept.name === newDeptName)) {
+                alert('Department already exists!');
+                addDeptBtn.disabled = false;
+                return;
+            }
+
+            const newDept = { name: newDeptName, sections: ['Sec A', 'Sec B'] };
+            departmentsDB.push(newDept);
+            localStorage.setItem(deptKey, JSON.stringify(departmentsDB));
+            addDepartmentToDOM(newDeptName, newDept.sections);
+            addDeptBtn.disabled = false;
+        }
+
+        function addSection(deptName) {
+            const newSectionName = prompt('Enter the section name:');
+            if (!newSectionName || newSectionName.trim() === '') return;
+
+            const deptIndex = departmentsDB.findIndex(dept => dept.name === deptName);
+            if (deptIndex === -1) return;
+
+            if (departmentsDB[deptIndex].sections.includes(newSectionName)) {
+                alert('Section already exists in this department!');
+                return;
+            }
+
+            departmentsDB[deptIndex].sections.push(newSectionName);
+            localStorage.setItem(deptKey, JSON.stringify(departmentsDB));
+            loadDepartments();
+            toggleSections(deptName);
+        }
+
+        function showContextMenu(e, deptName, sectionName) {
+            currentDeptName = deptName;
+            currentSectionName = sectionName;
+            const contextMenu = document.getElementById('contextMenu');
+            contextMenu.innerHTML = sectionName
+                ? `<button class="edit-btn" onclick="editSection()" aria-label="Edit section">Edit</button>
+                   <button class="delete-btn" onclick="deleteSection()" aria-label="Delete section">Delete</button>`
+                : `<button class="edit-btn" onclick="editDepartment()" aria-label="Edit department">Edit</button>
+                   <button class="delete-btn" onclick="deleteDepartment()" aria-label="Delete department">Delete</button>`;
+            contextMenu.classList.add('active');
+            const { pageX: x, pageY: y } = e;
+            const { offsetWidth: menuWidth, offsetHeight: menuHeight } = contextMenu;
+            contextMenu.style.left = `${Math.min(x, window.innerWidth - menuWidth)}px`;
+            contextMenu.style.top = `${Math.min(y, window.innerHeight - menuHeight)}px`;
+            document.addEventListener('click', hideContextMenu, { once: true });
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenu').classList.remove('active');
+            currentDeptName = null;
+            currentSectionName = null;
+        }
+
+        function editDepartment() {
+            if (!currentDeptName) return;
+            const newDeptName = prompt('Edit department name:', currentDeptName);
+            if (!newDeptName || newDeptName.trim() === '' || newDeptName === currentDeptName) return;
+
+            if (departmentsDB.some(dept => dept.name === newDeptName)) {
+                alert('Department name already exists!');
+                return;
+            }
+
+            const deptIndex = departmentsDB.findIndex(dept => dept.name === currentDeptName);
+            if (deptIndex !== -1) {
+                departmentsDB[deptIndex].name = newDeptName;
+                localStorage.setItem(deptKey, JSON.stringify(departmentsDB));
+                loadDepartments();
+                toggleSections(newDeptName);
+            }
+            hideContextMenu();
+        }
+
+        function deleteDepartment() {
+            if (!currentDeptName || !confirm(`Delete department "${currentDeptName}" and all its sections?`)) return;
+
+            departmentsDB = departmentsDB.filter(dept => dept.name !== currentDeptName);
+            localStorage.setItem(deptKey, JSON.stringify(departmentsDB));
+            loadDepartments();
+            hideContextMenu();
+        }
+
+        function editSection() {
+            if (!currentDeptName || !currentSectionName) return;
+            const newSectionName = prompt('Edit section name:', currentSectionName);
+            if (!newSectionName || newSectionName.trim() === '' || newSectionName === currentSectionName) return;
+
+            const deptIndex = departmentsDB.findIndex(dept => dept.name === currentDeptName);
+            if (deptIndex === -1) return;
+
+            if (departmentsDB[deptIndex].sections.includes(newSectionName)) {
+                alert('Section name already exists in this department!');
+                return;
+            }
+
+            const sectionIndex = departmentsDB[deptIndex].sections.indexOf(currentSectionName);
+            if (sectionIndex !== -1) {
+                departmentsDB[deptIndex].sections[sectionIndex] = newSectionName;
+                localStorage.setItem(deptKey, JSON.stringify(departmentsDB));
+                loadDepartments();
+                toggleSections(currentDeptName);
+            }
+            hideContextMenu();
+        }
+
+        function deleteSection() {
+            if (!currentDeptName || !currentSectionName || !confirm(`Delete section "${currentSectionName}" from "${currentDeptName}"?`)) return;
+
+            const deptIndex = departmentsDB.findIndex(dept => dept.name === currentDeptName);
+            if (deptIndex === -1) return;
+
+            departmentsDB[deptIndex].sections = departmentsDB[deptIndex].sections.filter(sec => sec !== currentSectionName);
+            if (departmentsDB[deptIndex].sections.length === 0) {
+                departmentsDB.splice(deptIndex, 1);
+            }
+            localStorage.setItem(deptKey, JSON.stringify(departmentsDB));
+            loadDepartments();
+            if (departmentsDB.some(dept => dept.name === currentDeptName)) {
+                toggleSections(currentDeptName);
+            }
+            hideContextMenu();
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('headerButtons');
+            menu.classList.toggle('active');
+            document.addEventListener('click', closeMenuOutside, { once: true });
+        }
+
+        function closeMenuOutside(e) {
+            const menu = document.getElementById('headerButtons');
+            const hamburger = document.querySelector('.hamburger');
+            if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                document.body.style.opacity = '0.7';
+                document.body.style.cursor = 'wait';
+                localStorage.setItem('lastLogin', Date.now());
+                localStorage.removeItem('loggedInUser');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 300);
+            }
+        }
+
+        function goBack() {
+            document.body.style.opacity = '0.7';
+            document.body.style.cursor = 'wait';
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 300);
+        }
+
+        function resetLoadingState() {
+            document.body.style.opacity = '1';
+            document.body.style.cursor = 'default';
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = false);
+        }
+
+        // Load departments on page load
+        loadDepartments();
+    </script>
+</body>
+</html>

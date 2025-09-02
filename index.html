@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UFT-8">
+        <meta http-equiv="x-UA-Compatible" content="IE-edge">
+        <meta name="viewpoint" content="width=device-width,initial-scale=1.0">
+        <title>personal protfolio</title>
+        <link rel="Stylesheet" href="style.css">
+        <script src="https://kit.fontawesome.com/afa8afc15f.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="header">
+        <div class="container">
+            <nav>
+                <img src="images/logo.png" class="logo">
+                <ul id="sidemenu">
+                    <li><a href="#header">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">services</a></li>
+                    <li><a href="#portfolio">portfolio</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <i class="fa-solid fa-circle-xmark" onclick="closemenu()"></i>
+                </ul>
+                <i class="fa-solid fa-bars" onclick="openmenu()"></i>
+            </nav>
+            <div class="header-text">
+                
+                <h1>Hi, I'am <span>Lokesh</span><br>From andhra pradesh</h1>
+                <p>student</p>
+            </div>
+        </div>
+    </div>
+    <!----------ABOUT--------->
+    <div id="about">
+        <div class="container">
+            <div class="row">
+                <div class="about-col-1">
+                    <img src="images/lok.jpeg">
+                </div>
+                <div class="about-col-2">
+                    <h1 class="sub-title">About Me</h1>
+                    <p>I’m a passionate Information Technology student with a strong foundation in Java and Web Development. am actively seeking a Developer 
+                        role where I can contribute innovative solutions and work on impactful, real-world projects. My goal is to deepen my expertise in 
+                        Java-based software and mobile app development while continuously learning and growing as a developer.
+                    </p>
+                    <div class="tab-titles">
+                        <p class="tab-links active-link" onclick="opentab('skills')">skills</p>
+                        <p class="tab-links" onclick="opentab('experience')">Experience</p>
+                        <p class="tab-links" onclick="opentab('education')">Education</p>
+                    </div>
+                    <div class="tab-contents active-tab" id="skills">
+                        <ul>
+                            <li><span>Languages</span><br><ul><li>&nbsp;&nbsp;&nbsp;&nbsp;Java, JavaScript, Python, C, C++</li>	
+                            <li><span>Web</span><br>&nbsp;&nbsp;&nbsp;&nbsp;HTML, CSS, Bootstrap, Node.js, Express.js</li>
+                            <li><span>Database</span><br>&nbsp;&nbsp;&nbsp;&nbsp;BMongoDB, MySQL</li>
+			    <li><span>Tools</Span><br>&nbsp;&nbsp;&nbsp;&nbsp;Git, GitHub, VS Code</li>
+			    <li><span>Data Tools</span><br>&nbsp;&nbsp;&nbsp;&nbsp;NumPy, Google Colab, Excel</li>
+                        </ul>
+                    </div>
+                    <div class="tab-contents" id="experience">
+                        <ul>
+                            <li><span>Current-status</span><br><li><ul></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fresher(student)</li></ul></li>
+                            <!----<li><span>2019 - 2021</span><br>Team lead at StartApp LLC.</li>
+                            <li><span>App Development</span><br>UI/UX Design Executive at Coin Digital Ltd.</li>
+                            <li><span>2016-2017</span><br>Internship at ekart eCommerce.</li>--->
+                        </ul>
+                    </div>
+                    <div class="tab-contents" id="education">
+                        <ul>
+                            <li><span><strong>B.Tech in Information Technology</strong></span><br>MVGR College of Engineerning (2023-present)-CGPA:7.01/10</li>
+			    <li><span><strong>Diploma</strong></span><br>diploma in computers. In seetha polytechnic, Bhimavaram (2020-2023)-72%</li>
+			    <li><span><strong>10th Grade</strong></span><br>ZP High School, Malleswaram (2019-2020)-84%</li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!----------services------------>
+    <div id="services">
+        <div class="container">
+            <h1 class="sub-title">My Servises</h1>
+            <div class="services-list">
+                <div>
+                    <i class="fa-solid fa-code"></i>
+                    <h2>Web Design</h2>
+                    <p>I design and build modern, user-friendly websites using HTML, CSS, and JavaScript. I focus on performance, responsiveness, and simplicity.</p>
+                   
+                </div>
+                <div>
+                    <i class="fa-brands fa-app-store-ios"></i>
+                    <h2>App Design</h2>
+                    <p>As a beginner in app design, I focus on creating simple and user-friendly layouts while learning to improve functionality and user experience through hands-on practice.</p>
+                    
+                </div>
+                <div>
+                    <i class="fa-solid fa-code"></i>
+                    <h2>Java</h2>
+                    <p>With intermediate expertise in Java, I build console-based applications and understand object-oriented programming, file handling, and basic data structures.</p>
+                    
+                </div>                
+            </div>
+        </div>
+    </div>
+    <!-----------protfolio----------->
+    <div id="portfolio">
+        <div class="container">
+            <h1 class="sub-title">My Work</h1>
+            <div class="work-list">
+                <div class="work">
+                    <img src="images/trackmyclass1.jpg">
+                    <div class="layer">
+                        <h3>Track My Class
+                        </h3>
+                        <p>A smart attendance and performance tracking system for students and teachers, offering an intuitive dashboard for managing classes, sections, and academic records. Try it now!</p>
+                        <a href="trackmyclassproject\index.html"><i class="fa-solid fa-arrow-up-right-from-square" ></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="work">
+                    <img src="images/sas1.jpg">
+                    <div class="layer">
+                        <h3>Scam alert System</h3>
+                        <p>A web-based platform to report and explore common scams, helping users stay informed and safe through real-time scam listings and precaution tips.</p>
+                        <a href="scamalertsystem\public\saslogin.html"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    </div>
+                </div>
+                <div class="work">
+                    <img src="images/work-1.jpg">
+                    <div class="layer">
+                        <h3>Empty</h3>
+                        <p>My new work will be on going.</p>
+                        <a href="#"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    </div>
+                </div>
+            </div>
+            <a href="#" class="btn">see more</a>
+        </div>
+    </div>
+
+    <!-------------contact--------->
+    <div id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="contact-left">
+                    <h1 class="sub-title">Contact Me</h1>
+                    <p><i class="fa-solid fa-paper-plane"></i>vellalokesh111@gmail.com</p>
+                    <p><i class="fa-solid fa-phone"></i>+91 9182670362</p>
+                    <div class="social-icons">
+                        <a href=""><i class="fa-brands fa-linkedin"></i></a>
+                        <a href=""><i class="fa-brands fa-github"></i></a>
+                    </div>
+                    <a href=""class="btn btn2">Download CV</a>
+                </div>
+                <div class="contact-right">
+                    <form name="submit-to-google-sheet">
+                        <input type="text" name="Name" placeholder="Your Name" required>
+                        <input type="email" name="Email" placeholder="Your Email" required>
+                        <textarea name="Message" rows="6" placeholder="Your Message"></textarea>
+                        <button type="submit" class="btn btn2">Submit</button>
+                    </form>
+                    <span id="msg"></span>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p><i class="fa-solid fa-heart"></i></p>
+        </div>
+    </div>
+<script>
+        var tablinks = document.getElementsByClassName("tab-links");
+        var tabcontents = document.getElementsByClassName("tab-contents");
+        function opentab(tabname){
+            for(tablink of tablinks){
+                tablink.classList.remove("active-link");
+            }
+            for(tabcontent of tabcontents){
+                tabcontent.classList.remove("active-tab");
+            }
+            event.currentTarget.classList.add("active-link");
+            document.getElementById(tabname).classList.add("active-tab");
+        }   
+</script>
+<script>
+    var sidemenu=document.getElementById("sidemenu");
+    function openmenu(){
+        sidemenu.style.right = "0";
+    }
+    function closemenu(){
+        sidemenu.style.right = "-200px";
+    }
+</script>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzRnm4CtAFy8KvoT1x_hxe9OOoETR_i3QLYqXUeGeBc82dfme01zburNUdc7FOLQ3sN/exec'
+    const form = document.forms['submit-to-google-sheet']
+    const msg = document.getElementById("msg")
+    form.addEventListener('submit', e => {
+      e.preventDefault()
+      fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+        .then(response => {
+            msg.innerHTML = "Message sent successfully"
+            setTimeout(function(){
+                msg.innerHTML = ""
+            },1000)
+            form.reset()
+        })
+        .catch(error => console.error('Error!', error.message))
+    })
+  </script>
+
+</body>
+</html>

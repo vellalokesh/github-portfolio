@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .container:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-section.active {
+            display: flex;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 26px;
+        }
+
+        form {
+            width: 100%;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: 500;
+            color: #34495e;
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="tel"] {
+            padding: 12px 40px 12px 15px;
+            border: 1px solid #dcdcdc;
+            border-radius: 6px;
+            background: #f9f9f9;
+            width: 100%;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px;
+            background: #2ecc71;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #27ae60;
+        }
+
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .links a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 8px;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .message {
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .message.success {
+            color: #27ae60;
+            background: #e8f5e9;
+            display: block;
+        }
+
+        .message.error {
+            color: #c0392b;
+            background: #fce4e4;
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                max-width: 90%;
+                padding: 30px;
+            }
+            h2 { font-size: 22px; }
+            button { font-size: 14px; }
+            input[type="text"], input[type="password"], input[type="email"], input[type="tel"] {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-section login active" id="loginFormSection">
+            <h2>Login</h2>
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="input-group">
+                    <label for="loginIdentifier">Username/Email/Phone</label>
+                    <input type="text" id="loginIdentifier" name="loginIdentifier" required autocomplete="username">
+                    <span class="input-icon">👤</span>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                    <span class="input-icon">🔒</span>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <div class="message" id="loginMessage"></div>
+            <div class="links">
+                <a href="#" id="forgotPasswordLink">Forgot Password?</a> | 
+                <a href="#" id="registerLink">Register</a>
+            </div>
+        </div>
+        <div class="form-section register" id="registerFormSection">
+            <h2>Register</h2>
+            <form id="registerFormElement" onsubmit="return handleRegister(event)">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required minlength="3" autocomplete="username">
+                    <span class="input-icon">👤</span>
+                </div>
+                <div class="input-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" name="email" required autocomplete="email">
+                    <span class="input-icon">✉️</span>
+                </div>
+                <div class="input-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}" title="Please enter a 10-digit phone number">
+                    <span class="input-icon">📞</span>
+                </div>
+                <div class="input-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" name="password" required minlength="8" autocomplete="new-password">
+                    <span class="input-icon">🔒</span>
+                </div>
+                <div class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8" autocomplete="new-password">
+                    <span class="input-icon">🔒</span>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+            <div class="message" id="registerMessage"></div>
+            <div class="links">
+                <a href="#" id="loginLink">Login</a>
+            </div>
+        </div>
+        <div class="form-section forgot" id="forgotPasswordFormSection">
+            <h2>Reset Password</h2>
+            <form id="forgotPasswordFormElement" onsubmit="return handleForgotPassword(event)">
+                <div class="input-group">
+                    <label for="forgotEmail">Email</label>
+                    <input type="email" id="forgotEmail" name="forgotEmail" required autocomplete="email">
+                    <span class="input-icon">✉️</span>
+                </div>
+                <button type="submit">Send Reset Link</button>
+            </form>
+            <div class="message" id="forgotMessage"></div>
+            <div class="links">
+                <a href="#" id="loginLinkFromForgot">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loginSection = document.getElementById('loginFormSection');
+        const registerSection = document.getElementById('registerFormSection');
+        const forgotSection = document.getElementById('forgotPasswordFormSection');
+        const registerLink = document.getElementById('registerLink');
+        const loginLink = document.getElementById('loginLink');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const loginLinkFromForgot = document.getElementById('loginLinkFromForgot');
+
+        function showSection(section) {
+            [loginSection, registerSection, forgotSection].forEach(s => s.classList.remove('active'));
+            section.classList.add('active');
+            clearMessages();
+        }
+
+        function clearMessages() {
+            document.querySelectorAll('.message').forEach(msg => {
+                msg.textContent = '';
+                msg.className = 'message';
+            });
+        }
+
+        function showMessage(elementId, text, type) {
+            const msg = document.getElementById(elementId);
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+        }
+
+        registerLink.addEventListener('click', (e) => { e.preventDefault(); showSection(registerSection); });
+        loginLink.addEventListener('click', (e) => { e.preventDefault(); showSection(loginSection); });
+        forgotPasswordLink.addEventListener('click', (e) => { e.preventDefault(); showSection(forgotSection); });
+        loginLinkFromForgot.addEventListener('click', (e) => { e.preventDefault(); showSection(loginSection); });
+
+        function handleRegister(event) {
+            event.preventDefault();
+            const form = event.target;
+            const button = form.querySelector('button');
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            button.disabled = true;
+
+            try {
+                if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                    throw new Error('Username can only contain letters, numbers, and underscores.');
+                }
+
+                if (!/^[0-9]{10}$/.test(phone)) {
+                    throw new Error('Phone number must be 10 digits.');
+                }
+
+                if (password !== confirmPassword) {
+                    throw new Error('Passwords do not match.');
+                }
+
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                if (users.some(user => user.email === email)) {
+                    throw new Error('Email already registered.');
+                }
+                if (users.some(user => user.phone === phone)) {
+                    throw new Error('Phone number already registered.');
+                }
+                if (users.some(user => user.username === username)) {
+                    throw new Error('Username already taken.');
+                }
+
+                if (password.length < 8) {
+                    throw new Error('Password must be at least 8 characters long.');
+                }
+
+                const newUser = { 
+                    username, 
+                    email, 
+                    phone,
+                    password: btoa(password) 
+                };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.setItem(`departments-${email}`, JSON.stringify([]));
+                localStorage.setItem(`attendance-${email}`, JSON.stringify({}));
+                localStorage.setItem(`history-${email}`, JSON.stringify([]));
+
+                showMessage('registerMessage', 'Registration successful! Please log in.', 'success');
+                setTimeout(() => {
+                    showSection(loginSection);
+                    form.reset();
+                }, 1500);
+            } catch (error) {
+                showMessage('registerMessage', error.message, 'error');
+            } finally {
+                button.disabled = false;
+            }
+            return false;
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const form = event.target;
+            const button = form.querySelector('button');
+            const identifier = document.getElementById('loginIdentifier').value.trim();
+            const password = document.getElementById('password').value;
+
+            button.disabled = true;
+
+            try {
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(user => 
+                    (user.username === identifier || 
+                     user.email === identifier || 
+                     user.phone === identifier) && 
+                    user.password === btoa(password)
+                );
+
+                if (!user) {
+                    throw new Error('Invalid credentials.');
+                }
+
+                localStorage.setItem('loggedInUser', JSON.stringify({ 
+                    username: user.username, 
+                    email: user.email,
+                    phone: user.phone 
+                }));
+                showMessage('loginMessage', 'Login successful! Redirecting...', 'success');
+                setTimeout(() => window.location.href = 'index.html', 1000);
+            } catch (error) {
+                showMessage('loginMessage', error.message, 'error');
+            } finally {
+                button.disabled = false;
+            }
+            return false;
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            const form = event.target;
+            const button = form.querySelector('button');
+            const email = document.getElementById('forgotEmail').value.trim();
+
+            button.disabled = true;
+
+            try {
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(user => user.email === email);
+
+                if (!user) {
+                    throw new Error('Email not found.');
+                }
+
+                showMessage('forgotMessage', 'Reset link sent! Check console (simulated).', 'success');
+                console.log(`Password for ${email}: ${atob(user.password)}`);
+                setTimeout(() => {
+                    showSection(loginSection);
+                    form.reset();
+                }, 1500);
+            } catch (error) {
+                showMessage('forgotMessage', error.message, 'error');
+            } finally {
+                button.disabled = false;
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>
